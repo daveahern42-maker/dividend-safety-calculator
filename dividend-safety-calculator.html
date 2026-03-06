@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dividend Safety Calculator — School of Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0D1B2A;
+    --blue:   #1A6FAD;
+    --teal:   #1B998B;
+    --orange: #F46036;
+    --purple: #6B4EAF;
+    --lt-blue:   #EBF4FB;
+    --lt-teal:   #E6F7F5;
+    --lt-orange: #FEF0EB;
+    --lt-purple: #F0EAFA;
+    --gray:  #F5F6F8;
+    --muted: #6B7280;
+    --text:  #1A1A2E;
+    --border: #E5E7EB;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--navy);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .site-brand {
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .site-badge {
+    background: rgba(27,153,139,0.15);
+    border: 1px solid rgba(27,153,139,0.3);
+    color: var(--teal);
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy);
+    padding: 40px 40px 0;
+    text-align: center;
+  }
+
+  .hero-label {
+    display: inline-block;
+    background: rgba(244,96,54,0.12);
+    color: var(--orange);
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(244,96,54,0.3);
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 34px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .hero h1 span { color: var(--teal); }
+
+  .hero p {
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0 auto 28px;
+  }
+
+  /* ── MAIN WRAPPER ── */
+  .main {
+    background: var(--gray);
+    border-radius: 20px 20px 0 0;
+    padding: 36px 40px 60px;
+    min-height: 600px;
+  }
+
+  /* ── STOCK INPUT BAR ── */
+  .stock-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    flex-wrap: wrap;
+  }
+
+  .stock-field { flex: 1; min-width: 160px; }
+
+  .stock-field label {
+    display: block;
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .stock-field input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--gray);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .stock-field input:focus { border-color: var(--teal); background: white; }
+  .stock-field input::placeholder { color: #CBD5E1; font-weight: 400; }
+
+  .calc-btn {
+    background: var(--navy);
+    color: white;
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 11px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .calc-btn:hover { background: #1a2f45; transform: translateY(-1px); }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* ── SECTION LAYOUT ── */
+  .sections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* ── CATEGORY CARD ── */
+  .cat-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .cat-head {
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cat-head-left { display: flex; align-items: center; gap: 10px; }
+  .cat-icon { font-size: 16px; }
+
+  .cat-head h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.3px;
+  }
+
+  .cat-pts-badge {
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.12);
+    padding: 3px 9px;
+    border-radius: 10px;
+  }
+
+  .cat-head.blue   { background: var(--blue); }
+  .cat-head.teal   { background: var(--teal); }
+  .cat-head.orange { background: var(--orange); }
+  .cat-head.purple { background: var(--purple); }
+
+  .cat-body { padding: 6px 0; }
+
+  /* ── QUESTION ROW ── */
+  .q-row {
+    padding: 10px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+    border-bottom: 1px solid #F3F4F6;
+    transition: background 0.15s;
+  }
+
+  .q-row:last-child { border-bottom: none; }
+  .q-row:hover { background: #FAFAFA; }
+
+  .q-text {
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .q-pts {
+    display: inline-block;
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    background: #EDE9FE;
+    color: #5B21B6;
+    white-space: nowrap;
+  }
+
+  .q-pts.one { background: #F3F4F6; color: var(--muted); }
+
+  /* ── TOGGLE SWITCH ── */
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .toggle-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .toggle input { display: none; }
+
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: #E5E7EB;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.25s;
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.25s, box-shadow 0.25s;
+    pointer-events: none;
+  }
+
+  .toggle input:checked ~ .toggle-track { background: var(--teal); }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); box-shadow: 0 1px 4px rgba(27,153,139,0.4); }
+
+  .toggle-track { cursor: pointer; }
+
+  /* ── SCORE RESULT PANEL ── */
+  .score-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+  }
+
+  .score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .score-left h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .score-left p { font-size: 12px; color: var(--muted); }
+
+  .score-display {
+    text-align: right;
+  }
+
+  .score-number {
+    font-family: 'Sora', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--navy);
+    transition: color 0.3s;
+  }
+
+  .score-denom {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .score-verdict {
+    display: inline-block;
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
+    transition: all 0.3s;
+  }
+
+  /* ── SCORE BAR ── */
+  .score-bar-wrap {
+    margin-bottom: 20px;
+  }
+
+  .score-bar-track {
+    height: 10px;
+    background: #F3F4F6;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: var(--teal);
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+  }
+
+  .score-bar-labels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .bar-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+    transition: opacity 0.3s;
+    opacity: 0.35;
+  }
+
+  .bar-label.active { opacity: 1; }
+  .bl-avoid   { background: #FEE2E2; color: #991B1B; }
+  .bl-caution { background: #FEF3C7; color: #92400E; }
+  .bl-worth   { background: var(--lt-blue); color: var(--blue); }
+  .bl-strong  { background: #D1FAE5; color: #065F46; }
+
+  /* ── CATEGORY BREAKDOWN ── */
+  .cat-breakdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .breakdown-pill {
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .breakdown-pill .bp-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .breakdown-pill .bp-score {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .breakdown-pill .bp-max {
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .bp-blue   { background: var(--lt-blue); }
+  .bp-teal   { background: var(--lt-teal); }
+  .bp-orange { background: var(--lt-orange); }
+  .bp-purple { background: var(--lt-purple); }
+
+  .bp-blue   .bp-label, .bp-blue   .bp-score { color: var(--blue); }
+  .bp-teal   .bp-label, .bp-teal   .bp-score { color: var(--teal); }
+  .bp-orange .bp-label, .bp-orange .bp-score { color: var(--orange); }
+  .bp-purple .bp-label, .bp-purple .bp-score { color: var(--purple); }
+  .bp-blue .bp-max { color: rgba(26,111,173,0.5); }
+  .bp-teal .bp-max { color: rgba(27,153,139,0.5); }
+  .bp-orange .bp-max { color: rgba(244,96,54,0.5); }
+  .bp-purple .bp-max { color: rgba(107,78,175,0.5); }
+
+  /* ── INSIGHTS PANEL ── */
+  .insights-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .insights-head {
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .insights-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+
+  .insight-item.good   { background: #F0FDF4; color: #166534; }
+  .insight-item.warn   { background: #FFFBEB; color: #92400E; }
+  .insight-item.bad    { background: #FEF2F2; color: #991B1B; }
+  .insight-item.neutral{ background: var(--gray); color: var(--muted); }
+
+  .insight-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── RESET BTN ── */
+  .reset-btn {
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 16px;
+  }
+
+  .reset-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    background: var(--navy);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .site-footer .brand { font-family:'Sora',sans-serif; font-size:11px; font-weight:700; color:var(--teal); }
+  .site-footer .url   { font-size:11px; color:rgba(255,255,255,0.25); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .sections-grid { grid-template-columns: 1fr; }
+    .cat-breakdown { grid-template-columns: repeat(2,1fr); }
+    .score-bar-labels { grid-template-columns: repeat(2,1fr); }
+    .hero { padding: 28px 20px 0; }
+    .main { padding: 24px 20px 48px; }
+    .site-header, .stock-bar { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="site-brand">School of Investing</div>
+  <div class="site-badge">Subscriber Tool</div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Dividend Safety Calculator</div>
+  <h1>The Dividend <span>Safety Score</span></h1>
+  <p>Answer 16 yes/no questions. Get an instant 22-point safety score with a verdict and personalized insights — based on the framework in Report No. 3.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STOCK BAR -->
+  <div class="stock-bar">
+    <div class="stock-field">
+      <label>Company Name</label>
+      <input type="text" id="companyName" placeholder="e.g. Johnson & Johnson">
+    </div>
+    <div class="stock-field" style="max-width:120px">
+      <label>Ticker</label>
+      <input type="text" id="ticker" placeholder="e.g. JNJ" style="text-transform:uppercase">
+    </div>
+    <button class="calc-btn" onclick="resetAll()">↺ Reset</button>
+  </div>
+
+  <!-- SCORE PANEL -->
+  <div class="score-panel">
+    <div class="score-header">
+      <div class="score-left">
+        <h2 id="stockTitle">Your Dividend Safety Score</h2>
+        <p>Answer the questions below — your score updates in real time</p>
+      </div>
+      <div class="score-display">
+        <div class="score-number" id="scoreNum">0<span class="score-denom"> / 22</span></div>
+        <div>
+          <span class="score-verdict" id="scoreVerdict" style="background:#F3F4F6;color:#6B7280">Awaiting Input</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="score-bar-wrap">
+      <div class="score-bar-track">
+        <div class="score-bar-fill" id="scoreBar"></div>
+      </div>
+      <div class="score-bar-labels">
+        <div class="bar-label bl-avoid"   id="lbl-avoid">Below 8 · Avoid</div>
+        <div class="bar-label bl-caution" id="lbl-caution">8–12 · Caution</div>
+        <div class="bar-label bl-worth"   id="lbl-worth">13–17 · Research</div>
+        <div class="bar-label bl-strong"  id="lbl-strong">18–22 · Strong</div>
+      </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <div class="cat-breakdown">
+      <div class="breakdown-pill bp-blue">
+        <div class="bp-label">Yield &amp; Value</div>
+        <div class="bp-score"><span id="s1">0</span><span class="bp-max"> / 5</span></div>
+      </div>
+      <div class="breakdown-pill bp-teal">
+        <div class="bp-label">Safety</div>
+        <div class="bp-score"><span id="s2">0</span><span class="bp-max"> / 7</span></div>
+      </div>
+      <div class="breakdown-pill bp-orange">
+        <div class="bp-label">Growth</div>
+        <div class="bp-score"><span id="s3">0</span><span class="bp-max"> / 5</span></div>
+      </div>
+      <div class="breakdown-pill bp-purple">
+        <div class="bp-label">Business</div>
+        <div class="bp-score"><span id="s4">0</span><span class="bp-max"> / 5</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION SECTIONS -->
+  <div class="sections-grid">
+
+    <!-- CAT 1: YIELD & VALUATION -->
+    <div class="cat-card">
+      <div class="cat-head blue">
+        <div class="cat-head-left">
+          <span class="cat-icon">📊</span>
+          <h3>Yield &amp; Valuation</h3>
+        </div>
+        <span class="cat-pts-badge">5 pts</span>
+      </div>
+      <div class="cat-body">
+        <div class="q-row">
+          <div class="q-text">Is the dividend yield between 2% and 5%?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q1" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Has the yield been stable over the past 3 years (not spiking due to a falling price)?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q2" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Does the stock appear to be at or below fair value based on your analysis?<span class="q-pts">2 pts</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q3" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Is the P/E ratio at or below the company's 5-year historical average?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q4" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT 2: DIVIDEND SAFETY -->
+    <div class="cat-card">
+      <div class="cat-head teal">
+        <div class="cat-head-left">
+          <span class="cat-icon">🛡️</span>
+          <h3>Dividend Safety</h3>
+        </div>
+        <span class="cat-pts-badge">7 pts</span>
+      </div>
+      <div class="cat-body">
+        <div class="q-row">
+          <div class="q-text">Is the earnings payout ratio below 60%?<span class="q-pts">2 pts</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q5" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Is the free cash flow payout ratio below 60%?<span class="q-pts">2 pts</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q6" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Did the company maintain or grow its dividend through at least one major recession (2008 or 2020)?<span class="q-pts">2 pts</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q7" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Is the debt-to-equity ratio below 2x?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q8" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT 3: DIVIDEND GROWTH -->
+    <div class="cat-card">
+      <div class="cat-head orange">
+        <div class="cat-head-left">
+          <span class="cat-icon">📈</span>
+          <h3>Dividend Growth</h3>
+        </div>
+        <span class="cat-pts-badge">5 pts</span>
+      </div>
+      <div class="cat-body">
+        <div class="q-row">
+          <div class="q-text">Has the company grown its dividend for 10 or more consecutive years?<span class="q-pts">2 pts</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q9" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Is the 5-year dividend growth rate 5% or higher per year?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q10" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Is the most recent 1-year dividend growth rate consistent with or better than the 5-year rate?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q11" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Has dividend per share grown faster than inflation (3%+) over the past 5 years?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q12" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT 4: BUSINESS QUALITY -->
+    <div class="cat-card">
+      <div class="cat-head purple">
+        <div class="cat-head-left">
+          <span class="cat-icon">🏛️</span>
+          <h3>Business Quality</h3>
+        </div>
+        <span class="cat-pts-badge">5 pts</span>
+      </div>
+      <div class="cat-body">
+        <div class="q-row">
+          <div class="q-text">Has revenue grown consistently over the past 5 years?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q13" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Have earnings per share (EPS) grown over the past 5 years?<span class="q-pts">2 pts</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q14" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Does the company have a durable competitive advantage (brand, switching costs, cost advantage, or network effect)?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q15" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-text">Has management demonstrated a consistent commitment to returning capital to shareholders over time?<span class="q-pts one">1 pt</span></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="q16" onchange="updateScore()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="insights-panel">
+    <div class="insights-head">💡 Score Insights</div>
+    <div class="insights-list" id="insightsList">
+      <div class="insight-item neutral">
+        <span class="insight-icon">→</span>
+        <span>Start answering questions above and your personalized insights will appear here.</span>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset all answers</button>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="brand">School of Investing</div>
+  <div class="url">schoolofinvesting.com</div>
+</footer>
+
+<script>
+  const QUESTIONS = [
+    { id:'q1',  cat:1, pts:1 },
+    { id:'q2',  cat:1, pts:1 },
+    { id:'q3',  cat:1, pts:2 },
+    { id:'q4',  cat:1, pts:1 },
+    { id:'q5',  cat:2, pts:2 },
+    { id:'q6',  cat:2, pts:2 },
+    { id:'q7',  cat:2, pts:2 },
+    { id:'q8',  cat:2, pts:1 },
+    { id:'q9',  cat:3, pts:2 },
+    { id:'q10', cat:3, pts:1 },
+    { id:'q11', cat:3, pts:1 },
+    { id:'q12', cat:3, pts:1 },
+    { id:'q13', cat:4, pts:1 },
+    { id:'q14', cat:4, pts:2 },
+    { id:'q15', cat:4, pts:1 },
+    { id:'q16', cat:4, pts:1 },
+  ];
+
+  const INSIGHTS_MAP = {
+    q1:  { good: "Yield is in the 2–5% sweet spot — attractive without raising red flags.", bad: "Yield is outside the 2–5% target range. If above 7%, investigate why before proceeding." },
+    q2:  { good: "Yield has been stable — not inflated by a falling stock price.", bad: "Yield instability may signal price weakness rather than genuine income opportunity." },
+    q3:  { good: "Stock appears fairly valued or better — good entry point context.", bad: "Overpaying for a dividend stock can significantly reduce your total return." },
+    q4:  { good: "P/E is at or below its 5-year average — valuation looks reasonable.", bad: "P/E is above its historical average — the market may be pricing in a lot of optimism." },
+    q5:  { good: "Earnings payout ratio is below 60% — solid safety cushion.", bad: "Earnings payout ratio is above 60%. High payout ratios leave little room for error." },
+    q6:  { good: "FCF payout ratio is below 60% — the dividend is well-covered by cash.", bad: "FCF payout ratio is above 60%. Cash flow coverage is the most important dividend safety check." },
+    q7:  { good: "Dividend survived a major recession — strong proof of durability.", bad: "No recession track record. It's unknown how this dividend would hold up in a downturn." },
+    q8:  { good: "Debt-to-equity is below 2x — balance sheet is manageable.", bad: "High debt load. Lenders get paid before shareholders — a risk in tough times." },
+    q9:  { good: "10+ consecutive years of dividend growth — a powerful signal of reliability.", bad: "Fewer than 10 years of consecutive growth. Less proof of long-term commitment." },
+    q10: { good: "5-year DGR is 5%+  — income is growing meaningfully above inflation.", bad: "5-year DGR is below 5%. Slow dividend growth may not keep pace with inflation over time." },
+    q11: { good: "Recent growth is keeping pace with the 5-year trend — no deceleration.", bad: "Dividend growth is decelerating. This is often an early warning sign before a freeze or cut." },
+    q12: { good: "Dividend has grown faster than inflation — real purchasing power is increasing.", bad: "Dividend growth has not kept pace with inflation. Your real income is shrinking over time." },
+    q13: { good: "Revenue has grown consistently — the top line supports a growing dividend.", bad: "Revenue growth has been inconsistent. A stagnant top line limits future dividend growth." },
+    q14: { good: "EPS has grown over 5 years — earnings are supporting the dividend well.", bad: "EPS has not grown over 5 years. A shrinking earnings base is one of the biggest dividend risks." },
+    q15: { good: "Company has a durable competitive advantage — dividend should be defensible.", bad: "No clear competitive moat. Without one, the business is more vulnerable to competition and margin pressure." },
+    q16: { good: "Management has a track record of returning capital — good alignment with shareholders.", bad: "Management's commitment to the dividend is unclear. Track record matters when times get tough." },
+  };
+
+  function updateScore() {
+    let total = 0, c1 = 0, c2 = 0, c3 = 0, c4 = 0;
+    let answered = 0;
+
+    QUESTIONS.forEach(q => {
+      const checked = document.getElementById(q.id).checked;
+      if (checked) {
+        total += q.pts;
+        if (q.cat === 1) c1 += q.pts;
+        if (q.cat === 2) c2 += q.pts;
+        if (q.cat === 3) c3 += q.pts;
+        if (q.cat === 4) c4 += q.pts;
+        answered++;
+      }
+    });
+
+    // Count how many have been toggled (either on or off from initial state)
+    const toggledCount = QUESTIONS.filter(q => {
+      const el = document.getElementById(q.id);
+      return el.dataset.touched === 'true';
+    }).length;
+
+    // Update score display
+    document.getElementById('scoreNum').childNodes[0].nodeValue = total;
+    document.getElementById('s1').textContent = c1;
+    document.getElementById('s2').textContent = c2;
+    document.getElementById('s3').textContent = c3;
+    document.getElementById('s4').textContent = c4;
+
+    // Update bar
+    const pct = (total / 22) * 100;
+    const bar = document.getElementById('scoreBar');
+    bar.style.width = pct + '%';
+
+    // Color & verdict
+    let color, verdict, verdictBg, verdictColor, barColor, activeLabel;
+    if (total >= 18) {
+      color = '#059669'; verdict = '✓ Strong Candidate';
+      verdictBg = '#D1FAE5'; verdictColor = '#065F46';
+      barColor = '#1B998B'; activeLabel = 'lbl-strong';
+    } else if (total >= 13) {
+      color = '#1A6FAD'; verdict = '→ Worth Researching';
+      verdictBg = '#EBF4FB'; verdictColor = '#1A6FAD';
+      barColor = '#1A6FAD'; activeLabel = 'lbl-worth';
+    } else if (total >= 8) {
+      color = '#D97706'; verdict = '⚠ Proceed With Caution';
+      verdictBg = '#FEF3C7'; verdictColor = '#92400E';
+      barColor = '#F46036'; activeLabel = 'lbl-caution';
+    } else if (total > 0) {
+      color = '#DC2626'; verdict = '✗ Avoid';
+      verdictBg = '#FEE2E2'; verdictColor = '#991B1B';
+      barColor = '#C0392B'; activeLabel = 'lbl-avoid';
+    } else {
+      color = '#6B7280'; verdict = 'Awaiting Input';
+      verdictBg = '#F3F4F6'; verdictColor = '#6B7280';
+      barColor = '#E5E7EB'; activeLabel = '';
+    }
+
+    document.getElementById('scoreNum').style.color = color;
+    bar.style.background = barColor;
+
+    const vEl = document.getElementById('scoreVerdict');
+    vEl.textContent = verdict;
+    vEl.style.background = verdictBg;
+    vEl.style.color = verdictColor;
+
+    // Bar labels
+    ['lbl-avoid','lbl-caution','lbl-worth','lbl-strong'].forEach(id => {
+      document.getElementById(id).classList.toggle('active', id === activeLabel);
+    });
+
+    // Stock title
+    const name = document.getElementById('companyName').value.trim();
+    const tick = document.getElementById('ticker').value.trim().toUpperCase();
+    const titleEl = document.getElementById('stockTitle');
+    if (name || tick) {
+      titleEl.textContent = (name && tick) ? `${name} (${tick}) — Safety Score` : (name || tick) + ' — Safety Score';
+    } else {
+      titleEl.textContent = 'Your Dividend Safety Score';
+    }
+
+    // Insights
+    buildInsights(total);
+  }
+
+  function buildInsights(total) {
+    const list = document.getElementById('insightsList');
+    const insights = [];
+
+    QUESTIONS.forEach(q => {
+      const el = document.getElementById(q.id);
+      if (el.dataset.touched !== 'true') return;
+      const checked = el.checked;
+      const map = INSIGHTS_MAP[q.id];
+      if (!map) return;
+      if (!checked) {
+        insights.push({ type: q.pts >= 2 ? 'bad' : 'warn', text: map.bad, pts: q.pts });
+      } else {
+        insights.push({ type: 'good', text: map.good, pts: q.pts });
+      }
+    });
+
+    // Sort: bad first, then warn, then good; within each sort by pts desc
+    insights.sort((a,b) => {
+      const order = { bad:0, warn:1, good:2 };
+      if (order[a.type] !== order[b.type]) return order[a.type] - order[b.type];
+      return b.pts - a.pts;
+    });
+
+    if (insights.length === 0) {
+      list.innerHTML = `<div class="insight-item neutral"><span class="insight-icon">→</span><span>Start answering questions above and your personalized insights will appear here.</span></div>`;
+      return;
+    }
+
+    // Show top 6
+    const shown = insights.slice(0, 6);
+    const icons = { good:'✓', warn:'⚠', bad:'✗', neutral:'→' };
+
+    list.innerHTML = shown.map(i => `
+      <div class="insight-item ${i.type}">
+        <span class="insight-icon">${icons[i.type]}</span>
+        <span>${i.text}</span>
+      </div>
+    `).join('');
+
+    // Overall closing insight
+    if (total >= 18) {
+      list.innerHTML += `<div class="insight-item good"><span class="insight-icon">🎯</span><span><strong>Strong result.</strong> This dividend appears well-covered, growing, and attached to a quality business. Complete your valuation analysis before committing.</span></div>`;
+    } else if (total >= 13) {
+      list.innerHTML += `<div class="insight-item neutral"><span class="insight-icon">🔍</span><span><strong>Decent foundation.</strong> Identify which No answers concern you most and dig deeper into those areas specifically.</span></div>`;
+    } else if (total >= 8) {
+      list.innerHTML += `<div class="insight-item warn"><span class="insight-icon">⚠</span><span><strong>More weaknesses than strengths.</strong> The dividend may be at risk. Be cautious and verify the red flag areas carefully.</span></div>`;
+    } else if (total > 0) {
+      list.innerHTML += `<div class="insight-item bad"><span class="insight-icon">✗</span><span><strong>Too many red flags.</strong> No matter how high the yield looks, the risk here is not worth it. Consider other opportunities.</span></div>`;
+    }
+  }
+
+  function resetAll() {
+    QUESTIONS.forEach(q => {
+      const el = document.getElementById(q.id);
+      el.checked = false;
+      el.dataset.touched = 'false';
+    });
+    document.getElementById('companyName').value = '';
+    document.getElementById('ticker').value = '';
+    document.getElementById('scoreNum').childNodes[0].nodeValue = '0';
+    document.getElementById('scoreNum').style.color = 'var(--navy)';
+    document.getElementById('s1').textContent = '0';
+    document.getElementById('s2').textContent = '0';
+    document.getElementById('s3').textContent = '0';
+    document.getElementById('s4').textContent = '0';
+    document.getElementById('scoreBar').style.width = '0%';
+    document.getElementById('scoreBar').style.background = '#E5E7EB';
+    const vEl = document.getElementById('scoreVerdict');
+    vEl.textContent = 'Awaiting Input';
+    vEl.style.background = '#F3F4F6';
+    vEl.style.color = '#6B7280';
+    ['lbl-avoid','lbl-caution','lbl-worth','lbl-strong'].forEach(id => {
+      document.getElementById(id).classList.remove('active');
+    });
+    document.getElementById('stockTitle').textContent = 'Your Dividend Safety Score';
+    document.getElementById('insightsList').innerHTML = `<div class="insight-item neutral"><span class="insight-icon">→</span><span>Start answering questions above and your personalized insights will appear here.</span></div>`;
+  }
+
+  // Mark toggles as touched on first interaction
+  QUESTIONS.forEach(q => {
+    const el = document.getElementById(q.id);
+    el.dataset.touched = 'false';
+    el.addEventListener('change', () => { el.dataset.touched = 'true'; });
+  });
+
+  // Update title when stock name/ticker changes
+  document.getElementById('companyName').addEventListener('input', updateScore);
+  document.getElementById('ticker').addEventListener('input', updateScore);
+</script>
+</body>
+</html>
